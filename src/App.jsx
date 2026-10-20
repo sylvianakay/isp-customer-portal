@@ -12,9 +12,10 @@ import Refer from './pages/Refer.jsx';
 import Profile from './pages/Profile.jsx';
 import Support from './pages/Support.jsx';
 import Legal from './pages/Legal.jsx';
+import Availability from './pages/Availability.jsx';
 
 const signedInPages = { '/overview': Overview, '/bills': Bills, '/pay': Pay, '/refer': Refer, '/support': Support, '/profile': Profile };
-const publicPages = { '/': Login, '/forgot': ForgotPassword, '/activate': Activate };
+const publicPages = { '/': Login, '/forgot': ForgotPassword, '/activate': Activate, '/availability': Availability };
 // Open whether or not someone is signed in.
 const legalPages = { '/privacy': 'privacy', '/terms': 'terms' };
 

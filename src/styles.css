@@ -664,7 +664,7 @@ a {
   gap: 4px 12px;
 }
 
-input:not([type='radio']) {
+input:not([type='radio'], [type='checkbox']) {
   width: 100%;
   min-height: 54px;
   padding: 0 18px;
@@ -742,11 +742,11 @@ input::placeholder {
   }
 }
 
-input:not([type='radio']):hover {
+input:not([type='radio'], [type='checkbox']):hover {
   border-color: var(--line-strong);
 }
 
-input:not([type='radio']):focus-visible {
+input:not([type='radio'], [type='checkbox']):focus-visible {
   outline: none;
   background: var(--surface);
   border-color: var(--charcoal);
@@ -1686,6 +1686,7 @@ input[aria-invalid='true'] {
 .check {
   display: flex;
   gap: 12px;
+  /* Box lines up with the first line of the label, however many lines it wraps to. */
   align-items: flex-start;
   font-weight: 500 !important;
   font-size: 0.9375rem;
@@ -2828,4 +2829,121 @@ input[aria-invalid='true'] {
 .legal-section p {
   color: var(--muted);
   max-width: 62ch;
+}
+
+/* Availability check */
+
+.availability-result {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px;
+  border-radius: var(--radius);
+  animation: rise 280ms var(--ease-out) both;
+}
+
+.availability-result.is-available {
+  background: var(--green-wash);
+  color: #135235;
+}
+
+.availability-result.is-planned {
+  background: var(--amber-wash);
+  color: #6b3304;
+}
+
+.availability-result.is-none {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.availability-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.availability-icon svg {
+  color: #fff;
+}
+
+.availability-result.is-none .availability-icon {
+  background: var(--charcoal);
+}
+
+.availability-result.is-available .availability-icon svg {
+  animation: pop 320ms var(--ease-out) 120ms both;
+}
+
+.availability-text {
+  min-width: 0;
+}
+
+.availability-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.availability-detail {
+  font-weight: 600;
+}
+
+/* The checked address, with a quiet "Change" beside it. */
+.availability-place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 10px;
+  margin-top: 6px;
+  font-size: 0.875rem;
+  opacity: 0.85;
+}
+
+.availability-place span {
+  overflow-wrap: anywhere;
+}
+
+.availability-place .link-button {
+  min-height: 32px;
+  font-size: 0.875rem;
+  color: inherit;
+}
+
+.callback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: rise 240ms var(--ease-out) both;
+}
+
+.callback-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6b3304;
+}
+
+.callback-note svg {
+  flex: none;
+}
+
+.callback-done {
+  animation: rise 260ms var(--ease-out) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .availability-result,
+  .availability-result.is-available .availability-icon svg,
+  .callback-form,
+  .callback-done {
+    animation: fade 200ms ease both;
+  }
 }

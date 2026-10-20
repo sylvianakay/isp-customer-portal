@@ -267,4 +267,30 @@ export async function createTicket({ category, subject, message, contactBy }) {
   return structuredClone(ticket);
 }
 
+// Availability (for people who aren't customers yet). The result is a sample: postcodes
+// in big-city ranges come back available, a few as planned, the rest not yet; a street
+// name gets a stable pseudo-random answer so the same address always gives the same result.
+export async function checkAvailability(query) {
+  await wait(1100);
+  const digits = query.replace(/\s/g, '');
+  let status;
+  if (/^\d{5}$/.test(digits)) {
+    const area = digits.slice(0, 2);
+    if (['10', '11', '12', '13', '14', '15', '16', '17', '54', '55', '56'].includes(area)) status = 'available';
+    else if (['18', '19', '26', '57'].includes(area)) status = 'planned';
+    else status = 'none';
+  } else {
+    const sum = [...query.toLowerCase()].reduce((n, ch) => n + ch.codePointAt(0), 0);
+    status = ['available', 'available', 'available', 'planned', 'none'][sum % 5];
+  }
+  return { query: query.trim(), status };
+}
+
+let callbacks = 0;
+export async function requestCallback({ name, phone, time, address, kind }) {
+  await wait(800);
+  callbacks += 1;
+  return { id: `ΔΙΑ-${3100 + callbacks * 7}`, name, phone, time, address, kind };
+}
+
 export const demoCredentials = { contract: DEMO_CONTRACT, password: DEMO_PASSWORD };

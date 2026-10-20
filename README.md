@@ -18,6 +18,7 @@ The demo only accepts its own sample account (contract `1048219370`, password `d
 ## What's in it
 
 - **First-time activation** instead of a default password: contract number, then an SMS code to the mobile on the contract (`123456` in the demo), then the customer's own password with live rules.
+- **Availability check** for people who aren't customers yet (linked from sign-in): street and number or postcode gives a sample result (available, coming soon, not yet), then a call-back or notify-me form with consent. Nothing is sent anywhere.
 - **Refer a friend.** A personal referral code to share, a form that hands a friend's details to sales, and the status of each referral.
 - **Sign in** by 10-digit contract number and password. It has inline validation, a show/hide password toggle, and a password reset flow.
 - **Overview.** The amount due is the first thing you see, along with the due date, days left, and a billing-cycle track. Below that are a one-tap pay button and the RF payment code with a copy button. The page also shows plan details, an automatic-payment switch, and recent bills.

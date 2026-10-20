@@ -11,8 +11,9 @@ export const brand = {
   // processor, e.g. { el: 'EveryPay', en: 'EveryPay' }.
   paymentProvider: { el: 'πιστοποιημένου παρόχου πληρωμών', en: 'a certified payment provider' },
   supportEmail: null,
-  // Coverage checker on the provider's public site, for people who aren't customers yet.
-  availabilityUrl: '#',
+  // Where people who aren't customers yet can check coverage. The demo has its own sample
+  // checker; in production point this at the provider's checker or keep the page.
+  availabilityUrl: '#/availability',
   termsUrl: '#/terms',
   privacyUrl: '#/privacy',
 };
