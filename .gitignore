@@ -4,3 +4,6 @@ dist
 *.log
 .env
 .env.*
+
+# Local Claude/MCP setup (machine-specific paths)
+.mcp.json

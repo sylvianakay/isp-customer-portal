@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { useI18n } from '../i18n.jsx';
 import { Link } from '../router.jsx';
 import { requestPasswordReset } from '../data/mockApi.js';
+import DemoNotice from '../components/DemoNotice.jsx';
 
 export default function ForgotPassword() {
   const { t } = useI18n();
@@ -18,8 +19,8 @@ export default function ForgotPassword() {
     try {
       const result = await requestPasswordReset(contract.replace(/\s/g, ''));
       setSentTo(result.sentTo);
-    } catch {
-      setError(t('login.errors.contract-format'));
+    } catch (err) {
+      setError(t(`login.errors.${err.message === 'demo-only' ? 'demo-only' : 'contract-format'}`));
     } finally {
       setBusy(false);
     }
@@ -39,19 +40,20 @@ export default function ForgotPassword() {
         </div>
       ) : (
         <form className="auth-form" onSubmit={onSubmit} noValidate>
+          <DemoNotice />
           <div className="field">
             <label htmlFor={`${id}-contract`}>{t('login.contract')}</label>
             <input
               id={`${id}-contract`}
               inputMode="numeric"
               autoComplete="username"
-              maxLength={9}
+              maxLength={13}
               value={contract}
               onChange={(e) => setContract(e.target.value)}
               aria-invalid={error ? 'true' : undefined}
-              aria-describedby={`${id}-hint${error ? ` ${id}-error` : ''}`}
+              placeholder={t('login.contractHint')}
+              aria-describedby={error ? `${id}-error` : undefined}
             />
-            <p className="hint" id={`${id}-hint`}>{t('login.contractHint')}</p>
             {error && <p className="field-error" id={`${id}-error`}>{error}</p>}
           </div>
           <button type="submit" className="button button-primary button-block" disabled={busy}>

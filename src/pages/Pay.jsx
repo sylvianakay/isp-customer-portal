@@ -6,6 +6,7 @@ import { getAccount, startPayment } from '../data/mockApi.js';
 import { date, money } from '../format.js';
 import Icon from '../components/Icon.jsx';
 import CopyButton from '../components/CopyButton.jsx';
+import { brand } from '../config/brand.js';
 
 const methods = [
   { id: 'card', icon: 'card' },
@@ -22,6 +23,7 @@ export default function Pay() {
   const [method, setMethod] = useState('card');
   const [phase, setPhase] = useState('form'); // form | processing | done
   const [receipt, setReceipt] = useState(null);
+  const [receiptState, setReceiptState] = useState('idle'); // idle | working | failed
   const otherRef = useRef(null);
   const id = useId();
 
@@ -55,6 +57,27 @@ export default function Pay() {
               <dd>{date(receipt.paidOn, lang, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</dd>
             </div>
           </dl>
+          <button
+            type="button"
+            className="button button-secondary button-block"
+            aria-busy={receiptState === 'working'}
+            disabled={receiptState === 'working'}
+            onClick={async () => {
+              setReceiptState('working');
+              try {
+                const { downloadReceiptPdf } = await import('../pdf/billPdf.js');
+                const bill = { ...account.current, period: account.current.issued };
+                await downloadReceiptPdf({ receipt, bill, account, lang, t });
+                setReceiptState('idle');
+              } catch {
+                setReceiptState('failed');
+              }
+            }}
+          >
+            <Icon name="download" size={18} className={receiptState === 'working' ? 'is-working' : undefined} />
+            {receiptState === 'working' ? t('bills.downloading') : t('pay.downloadReceipt')}
+          </button>
+          {receiptState === 'failed' && <p className="field-error" role="alert">{t('bills.downloadFailed')}</p>}
           <Link to="/overview" className="button button-primary button-block">{t('pay.done')}</Link>
         </section>
       </div>
@@ -158,7 +181,7 @@ export default function Pay() {
               <Icon name={m.icon} size={22} className="choice-icon" />
               <span className="choice-body">
                 <span className="choice-title">{t(`pay.${m.id}`)}</span>
-                <span className="choice-desc">{t(`pay.${m.id}Desc`)}</span>
+                <span className="choice-desc">{t(`pay.${m.id}Desc`, { provider: brand.paymentProvider[lang] })}</span>
               </span>
             </label>
           ))}

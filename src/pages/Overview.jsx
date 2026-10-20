@@ -22,6 +22,8 @@ export default function Overview() {
 
       <BillStatus current={account.current} />
 
+      {account.bonus && <BonusPanel bonus={account.bonus} />}
+
       <div className="overview-grid">
         <section className="panel" aria-labelledby="plan-heading">
           <h2 id="plan-heading" className="panel-title">{t('overview.plan')}</h2>
@@ -130,19 +132,26 @@ function BillStatus({ current }) {
 
   return (
     <section className={`bill${left <= 3 ? ' bill-urgent' : ''}`} aria-labelledby="bill-heading">
-      <div className="bill-main">
-        <h2 id="bill-heading" className="bill-label">{t('overview.due')}</h2>
-        <p className="bill-amount-big">{money(current.balance, lang)}</p>
-        <p className="bill-due">
-          <strong>{t('overview.dueOn', { date: date(current.due, lang) })}</strong>
-          <span className="bill-days">{daysText}</span>
-        </p>
-        <Link to="/pay" className="button button-primary button-large">
-          {t('overview.pay', { amount: money(current.balance, lang) })}
-        </Link>
-      </div>
+      <div className="bill-hero">
+        <div className="bill-main">
+          <h2 id="bill-heading" className="bill-label">{t('overview.due')}</h2>
+          <p className="bill-amount-big">{money(current.balance, lang)}</p>
+          {current.bonusApplied > 0 && (
+            <p className="bill-breakdown">
+              {t('overview.breakdown', { charges: money(current.charges, lang), bonus: money(current.bonusApplied, lang) })}
+            </p>
+          )}
+          <p className="bill-due">
+            <strong>{t('overview.dueOn', { date: date(current.due, lang) })}</strong>
+            <span className="bill-days">{daysText}</span>
+          </p>
+          <Link to="/pay" className="button button-on-brand button-large">
+            {t('overview.pay', { amount: money(current.balance, lang) })}
+          </Link>
+        </div>
 
-      <CycleTrack issued={current.issued} due={current.due} />
+        <CycleTrack issued={current.issued} due={current.due} />
+      </div>
 
       <div className="rf">
         <div>
@@ -158,6 +167,67 @@ function BillStatus({ current }) {
 
 // The billing cycle drawn as a line: issue date on the left, due date on the
 // right, and a marker for today. Tells you at a glance how much time is left.
+// The bonus wallet: balance, how far it goes, the half-the-fee rule and recent activity.
+function BonusPanel({ bonus }) {
+  const { t, lang } = useI18n();
+  const bills = Math.floor(bonus.balance / bonus.capPerBill);
+  const enough =
+    bills === 0 ? t('overview.bonus.enough.zero') : bills === 1 ? t('overview.bonus.enough.one') : t('overview.bonus.enough.other', { n: bills });
+  // Visual gauge of the next six bills the balance can cover.
+  const slots = 6;
+
+  return (
+    <section className="panel bonus" aria-labelledby="bonus-heading">
+      <div className="bonus-summary">
+        <h2 id="bonus-heading" className="panel-title">{t('overview.bonus.title')}</h2>
+        <p className="bonus-amount">{money(bonus.balance, lang)}</p>
+        <p className="bonus-explain">{t('overview.bonus.explain', { cap: money(bonus.capPerBill, lang) })}</p>
+        <div className="bonus-gauge" role="img" aria-label={enough}>
+          {Array.from({ length: slots }, (_, i) => (
+            <span key={i} className={i < bills ? 'bonus-slot is-full' : 'bonus-slot'} style={{ '--i': i }} />
+          ))}
+        </div>
+        <p className="bonus-enough">{enough}</p>
+        <p className="hint">{t('overview.bonus.rule')}</p>
+      </div>
+
+      <div className="bonus-activity">
+        <h3 className="bonus-activity-title">{t('overview.bonus.history')}</h3>
+        <ul className="bonus-entries">
+          {bonus.entries.slice(0, 4).map((entry) => {
+            const credit = entry.amount > 0;
+            return (
+              <li key={`${entry.key}-${entry.date}`} className="bonus-entry">
+                <span className={credit ? 'bonus-dot is-credit' : 'bonus-dot'} aria-hidden="true">
+                  <Icon name={credit ? 'gift' : 'receipt'} size={16} />
+                </span>
+                <span className="bonus-entry-text">
+                  <span className="bonus-entry-name">
+                    {t(`overview.bonus.entries.${entry.key}`, { month: monthYear(entry.date, lang) })}
+                  </span>
+                  <span className="bonus-entry-date">{shortDate(entry.date, lang)}</span>
+                </span>
+                <span className={credit ? 'bonus-entry-amount is-credit' : 'bonus-entry-amount'}>
+                  {credit ? '+' : '−'}
+                  {money(Math.abs(entry.amount), lang)}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+        <Link to="/refer" className="bonus-refer">
+          <Icon name="gift" size={20} />
+          <span className="bonus-refer-text">{t('overview.bonus.refer')}</span>
+          <span className="bonus-refer-cta">
+            {t('overview.bonus.referCta')}
+            <Icon name="back" size={16} className="flip" />
+          </span>
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 function CycleTrack({ issued, due }) {
   const { t, lang } = useI18n();
   const total = Math.max(1, daysBetween(issued, due));

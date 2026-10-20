@@ -3,6 +3,9 @@ import { useAuth } from '../auth.jsx';
 import { useI18n } from '../i18n.jsx';
 import { Link, navigate } from '../router.jsx';
 import { demoCredentials } from '../data/mockApi.js';
+import { brand } from '../config/brand.js';
+import Icon from '../components/Icon.jsx';
+import DemoNotice from '../components/DemoNotice.jsx';
 
 export default function Login() {
   const { t } = useI18n();
@@ -21,7 +24,7 @@ export default function Login() {
     e.preventDefault();
     const cleanContract = contract.replace(/\s/g, '');
     const next = {};
-    if (!/^\d{7}$/.test(cleanContract)) next.contract = 'contract-format';
+    if (!/^\d{10}$/.test(cleanContract)) next.contract = 'contract-format';
     if (!password) next.password = 'password-empty';
     setErrors(next);
     setFormError('');
@@ -33,7 +36,7 @@ export default function Login() {
       await signIn(cleanContract, password);
       navigate('/overview');
     } catch (err) {
-      setFormError(err.message === 'contract-format' ? 'contract-format' : 'credentials');
+      setFormError(['contract-format', 'demo-only'].includes(err.message) ? err.message : 'credentials');
       setBusy(false);
     }
   }
@@ -53,8 +56,10 @@ export default function Login() {
       </div>
 
       <form className="auth-form" onSubmit={onSubmit} noValidate>
+        <DemoNotice />
         {formError && (
           <p className="form-error" role="alert">
+            <Icon name="alert" size={20} />
             {t(`login.errors.${formError}`)}
           </p>
         )}
@@ -66,13 +71,13 @@ export default function Login() {
             id={`${id}-contract`}
             inputMode="numeric"
             autoComplete="username"
-            maxLength={9}
+            maxLength={13}
             value={contract}
             onChange={(e) => setContract(e.target.value)}
             aria-invalid={errors.contract ? 'true' : undefined}
-            aria-describedby={`${id}-contract-hint${errors.contract ? ` ${id}-contract-error` : ''}`}
+            placeholder={t('login.contractHint')}
+            aria-describedby={errors.contract ? `${id}-contract-error` : undefined}
           />
-          <p className="hint" id={`${id}-contract-hint`}>{t('login.contractHint')}</p>
           {errors.contract && (
             <p className="field-error" id={`${id}-contract-error`}>{t(`login.errors.${errors.contract}`)}</p>
           )}
@@ -89,6 +94,7 @@ export default function Login() {
               id={`${id}-password`}
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
+              placeholder="******"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               aria-invalid={errors.password ? 'true' : undefined}
@@ -116,6 +122,20 @@ export default function Login() {
         <button type="button" className="button button-ghost button-block" onClick={fillDemo}>
           {t('login.demo')}
         </button>
+
+        {/* Where people who were looking for "sign up" end up. */}
+        <div className="auth-extra">
+          <Link to="/activate" className="auth-extra-row">
+            <span>
+              <span className="auth-extra-label">{t('login.firstTime')}</span>
+              <span className="auth-extra-action">{t('login.activate')}</span>
+            </span>
+            <Icon name="back" size={18} className="auth-extra-arrow" />
+          </Link>
+          <p className="auth-extra-small">
+            {t('login.notCustomer')} <a href={brand.availabilityUrl}>{t('login.availability')}</a>
+          </p>
+        </div>
       </form>
     </section>
   );

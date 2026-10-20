@@ -1,0 +1,3 @@
+# Concept demo. Not for search engines.
+User-agent: *
+Disallow: /

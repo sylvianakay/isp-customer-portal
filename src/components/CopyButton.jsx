@@ -15,7 +15,7 @@ export default function CopyButton({ value }) {
   return (
     <button
       type="button"
-      className="button button-secondary"
+      className={copied ? 'button button-secondary copy-button is-copied' : 'button button-secondary copy-button'}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(value);
@@ -25,7 +25,10 @@ export default function CopyButton({ value }) {
         }
       }}
     >
-      <Icon name={copied ? 'check' : 'copy'} size={18} />
+      {/* Keyed so the icon and label swap with a short blur crossfade instead of a hard cut. */}
+      <span className="copy-content" key={copied ? 'copied' : 'copy'}>
+        <Icon name={copied ? 'check' : 'copy'} size={18} />
+      </span>
       <span aria-live="polite">{copied ? t('overview.copied') : t('overview.copy')}</span>
     </button>
   );

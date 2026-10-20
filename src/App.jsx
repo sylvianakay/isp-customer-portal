@@ -7,9 +7,16 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import Overview from './pages/Overview.jsx';
 import Bills from './pages/Bills.jsx';
 import Pay from './pages/Pay.jsx';
+import Activate from './pages/Activate.jsx';
+import Refer from './pages/Refer.jsx';
+import Profile from './pages/Profile.jsx';
+import Support from './pages/Support.jsx';
+import Legal from './pages/Legal.jsx';
 
-const signedInPages = { '/overview': Overview, '/bills': Bills, '/pay': Pay };
-const publicPages = { '/': Login, '/forgot': ForgotPassword };
+const signedInPages = { '/overview': Overview, '/bills': Bills, '/pay': Pay, '/refer': Refer, '/support': Support, '/profile': Profile };
+const publicPages = { '/': Login, '/forgot': ForgotPassword, '/activate': Activate };
+// Open whether or not someone is signed in.
+const legalPages = { '/privacy': 'privacy', '/terms': 'terms' };
 
 export default function App() {
   const { session } = useAuth();
@@ -18,10 +25,21 @@ export default function App() {
   const SignedInPage = signedInPages[path];
   const PublicPage = publicPages[path];
 
+  const legal = legalPages[path];
+
   useEffect(() => {
+    if (legal) return;
     if (session && !SignedInPage) navigate('/overview');
     if (!session && !PublicPage) navigate('/');
-  }, [session, SignedInPage, PublicPage]);
+  }, [session, SignedInPage, PublicPage, legal]);
+
+  if (legal) {
+    return (
+      <AppShell path={path} isPublic={!session} hero={false}>
+        <Legal kind={legal} />
+      </AppShell>
+    );
+  }
 
   if (session && SignedInPage) {
     return (
