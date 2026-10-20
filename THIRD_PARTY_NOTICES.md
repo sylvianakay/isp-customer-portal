@@ -1,6 +1,6 @@
 # Third-party notices
 
-This concept demo uses the following open-source software and fonts. Each is used under its own licence. The full texts ship with each package in `node_modules/`, and the Fira Sans licence is also in `public/fonts/OFL.txt`.
+This concept demo uses the following open-source software and fonts. Each is used under its own licence. The full texts ship with each package in `node_modules/`, and the Fira Sans licence is also in `public/FiraSans-OFL.txt`.
 
 | Component | Used for | Licence |
 | --- | --- | --- |

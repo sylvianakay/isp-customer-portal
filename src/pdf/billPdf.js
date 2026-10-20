@@ -31,7 +31,7 @@ async function loadFonts() {
     const base = import.meta.env.BASE_URL;
     fontBytes = Promise.all(
       ['FiraSans-Regular.ttf', 'FiraSans-Bold.ttf'].map((f) =>
-        fetch(`${base}fonts/${f}`).then((r) => {
+        fetch(`${base}${f}`).then((r) => {
           if (!r.ok) throw new Error(`font ${f}: ${r.status}`);
           return r.arrayBuffer();
         }),

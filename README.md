@@ -25,7 +25,7 @@ The demo only accepts its own sample account (contract `1048219370`, password `d
 - **Bonus account.** A credit wallet (switching offer, friend referrals) that pays up to half the monthly fee on each bill, with its balance, how many bills it covers, and recent activity.
 - **Profile.** Contact details with inline editing, change password with the same live rules, and notification settings (marketing is opt-in, off by default).
 - **Support.** Network status for the area, a step-by-step connection check (simulated), contact details, FAQ, and a request form with request history.
-- **Bills.** Full history with status, plus a branded PDF for each bill and a payment receipt PDF for each paid one, generated in the browser (`src/pdf/billPdf.js`, marked as a sample). It uses the Fira Sans font in `public/fonts/` (SIL Open Font License) because the built-in PDF fonts have no Greek.
+- **Bills.** Full history with status, plus a branded PDF for each bill and a payment receipt PDF for each paid one, generated in the browser (`src/pdf/billPdf.js`, marked as a sample). It uses the Fira Sans font files in `public/` (SIL Open Font License) because the built-in PDF fonts have no Greek.
 - **Pay.** Pay the full amount or a partial amount, by card, IRIS, or RF code. Card payments hand off to the payment processor's hosted page (set in `src/config/brand.js`), so the portal never touches card numbers. A receipt PDF can be downloaded straight after paying.
 - **Greek first, with an English switch.** Every string lives in `src/i18n.jsx`.
 - **Mobile-first and accessible.** Real form labels, keyboard focus, 44px touch targets, and screen-reader announcements for status changes.
