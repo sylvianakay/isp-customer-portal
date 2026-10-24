@@ -7,3 +7,6 @@ dist
 
 # Local Claude/MCP setup (machine-specific paths)
 .mcp.json
+
+# Launch video output (large files)
+brag-output*/

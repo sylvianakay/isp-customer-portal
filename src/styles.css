@@ -1120,6 +1120,8 @@ input[aria-invalid='true'] {
 }
 
 .bill-breakdown {
+  /* Balanced lines, so a lone word never wraps onto its own row on small phones. */
+  text-wrap: balance;
   margin: -8px 0 14px;
   font-size: 0.9375rem;
   color: rgb(255 255 255 / 0.82);

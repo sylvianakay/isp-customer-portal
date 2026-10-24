@@ -160,12 +160,14 @@ export async function startPayment({ amount, method }) {
       receipt: balance === 0 ? { ...receipt } : undefined,
     },
   };
+  save();
   return { ...receipt, balance };
 }
 
 export async function setAutopay(enabled) {
   await wait(400);
   account = { ...account, autopay: enabled };
+  save();
   return enabled;
 }
 
@@ -207,6 +209,7 @@ export async function submitReferral({ name, phone, area }) {
   await wait(700);
   const entry = { id: `r${Date.now()}`, name, nameEn: name, phone, area, status: 'contacted', date: new Date().toISOString() };
   referrals = [entry, ...referrals];
+  save();
   return structuredClone(entry);
 }
 
@@ -214,12 +217,14 @@ export async function submitReferral({ name, phone, area }) {
 export async function updateContact(changes) {
   await wait(600);
   account = { ...account, contact: { ...account.contact, ...changes } };
+  save();
   return structuredClone(account.contact);
 }
 
 export async function setPreference(key, value) {
   await wait(350);
   account = { ...account, prefs: { ...account.prefs, [key]: value } };
+  save();
   return value;
 }
 
@@ -264,6 +269,7 @@ export async function createTicket({ category, subject, message, contactBy }) {
     date: new Date().toISOString(),
   };
   tickets = [ticket, ...tickets];
+  save();
   return structuredClone(ticket);
 }
 
@@ -290,7 +296,29 @@ let callbacks = 0;
 export async function requestCallback({ name, phone, time, address, kind }) {
   await wait(800);
   callbacks += 1;
+  save();
   return { id: `ΔΙΑ-${3100 + callbacks * 7}`, name, phone, time, address, kind };
 }
 
 export const demoCredentials = { contract: DEMO_CONTRACT, password: DEMO_PASSWORD };
+
+// Demo changes (payments, contact details, settings, referrals, requests) survive a page
+// refresh: they're kept in this browser tab's sessionStorage, which empties when the tab
+// closes or on "Reset demo". Passwords are never stored. A real backend replaces all of this.
+const STORE_KEY = 'demo-state';
+
+function save() {
+  try {
+    sessionStorage.setItem(STORE_KEY, JSON.stringify({ account, referrals, tickets, callbacks }));
+  } catch { /* storage unavailable: the demo still works, it just forgets on refresh */ }
+}
+
+try {
+  const saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || 'null');
+  if (saved) {
+    account = saved.account ?? account;
+    referrals = saved.referrals ?? referrals;
+    tickets = saved.tickets ?? tickets;
+    callbacks = saved.callbacks ?? callbacks;
+  }
+} catch { /* corrupt or unavailable: start from the sample data */ }
